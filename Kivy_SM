@@ -1,0 +1,669 @@
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
+from kivy.app import App
+from kivy.uix.scrollview import ScrollView 
+from kivy.properties import StringProperty, ObjectProperty
+from kivy.properties import  NumericProperty
+from kivy.clock import Clock
+from kivy.core.window import Window
+from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager, Screen
+
+
+#### To-do
+
+### Fix bug when get question wrong
+### definition displays when word is clicked in lexidex
+
+### login screen
+### app name
+### Group words (clustering,GloVe)
+
+
+### In future the words should be able to be grouped into clusters to learn words
+### with some related meaning
+
+### Section(GRE) should be able to be switched (i.e. SAT) 
+
+### Games to add(crossword,analogy)
+
+###############################################################################
+### Table of contents
+
+### The app is a group of word games to study GRE words (Def,Syn,Ant,SampSent)
+
+
+### Make window size
+Window.size = (300, 500)
+
+# Declare screens
+class MenuScreen(Screen):
+    text = StringProperty()
+    def __init__(self, **kwargs):
+        super(MenuScreen, self).__init__(**kwargs)
+        
+    def p(self):
+        print(self.ids.syngame)
+
+class DefsScreen(Screen):
+    question = StringProperty('')
+    button_1 = StringProperty('')
+    button_2 = StringProperty('')
+    button_3 = StringProperty('')
+    button_4 = StringProperty('')
+    correct = StringProperty('')
+    rein = StringProperty('')
+    yes = NumericProperty()
+    tri = NumericProperty()
+    
+    def __init__(self, *args, **kwargs):
+        super(DefsScreen, self).__init__(*args, **kwargs)
+        t = Def_Game(1)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        self.rein = ' '
+        self.yes = 0
+        self.tri = 0
+    
+    def reset(self):
+        
+        t = Def_Game(1)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        return t
+    
+    def check(self,text):
+        z = 0
+        if text == self.correct:
+            self.yes+=1
+            self.tri+=1
+            z+=1
+            if self.tri >=1:
+                self.rein = str(str(self.yes)+'/'+str(self.tri))
+            self.reset()
+        elif text != self.correct:
+            self.tri+=1
+            self.rein = str(str(self.yes)+'/'+str(self.tri))
+            self.reset()
+        
+        l = [text,z]
+        update_score(l)
+
+class SynScreen(Screen):
+    question = StringProperty('')
+    button_1 = StringProperty('')
+    button_2 = StringProperty('')
+    button_3 = StringProperty('')
+    button_4 = StringProperty('')
+    correct = StringProperty('')
+    rein = StringProperty('')
+    yes = NumericProperty()
+    tri = NumericProperty()
+    
+    def __init__(self, *args, **kwargs):
+        super(SynScreen, self).__init__(*args, **kwargs)
+        t = Syn_Game(1)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        self.rein = ' '
+        self.yes = 0
+        self.tri = 0
+    
+    def reset(self):
+        
+        t = Syn_Game(1)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        return t
+    
+    def check(self,text):
+        def empt(dt):
+            self.reset()
+        z = 0
+        if text == self.correct:
+            self.yes+=1
+            self.tri+=1
+            z+=1
+            if self.tri >=1:
+                self.rein = str(str(self.yes)+'/'+str(self.tri))
+            l = [text,z]
+            update_score(l)
+            self.reset()
+        elif text != self.correct:
+            self.tri+=1
+            self.rein = str(str(self.yes)+'/'+str(self.tri))
+            c = self.correct
+            textz = c.upper()
+            self.button_1 = textz
+            self.button_2 = textz
+            self.button_3 = textz
+            self.button_4 = textz
+            
+            l = [text,z]
+            update_score(l)
+            Clock.schedule_once(empt, 5)    
+            
+    
+class AntScreen(Screen):
+    question = StringProperty('')
+    button_1 = StringProperty('')
+    button_2 = StringProperty('')
+    button_3 = StringProperty('')
+    button_4 = StringProperty('')
+    correct = StringProperty('')
+    tw = StringProperty('')
+    rein = StringProperty('')
+    yes = NumericProperty()
+    tri = NumericProperty()
+    
+    def __init__(self, *args, **kwargs):
+        super(AntScreen, self).__init__(*args, **kwargs)
+        t = Ant_Game(1)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        self.tw =t[3]
+        self.rein = ' '
+        self.yes = 0
+        self.tri = 0
+    
+    def reset(self):
+        
+        t = Ant_Game(1)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        self.tw =t[3]
+        return t
+    
+    def check(self,text):
+        def empt(dt):
+            self.reset()
+        z = 0
+        if text == self.correct:
+            self.yes+=1
+            self.tri+=1
+            z+=1
+            if self.tri >=1:
+                self.rein = str(str(self.yes)+'/'+str(self.tri))
+            l = [self.tw,z]
+            update_score(l)
+            self.reset()
+        elif text != self.correct:
+            self.tri+=1
+            self.rein = str(str(self.yes)+'/'+str(self.tri))
+            c = self.correct
+            textz = c.upper()
+            self.button_1 = textz
+            self.button_2 = textz
+            self.button_3 = textz
+            self.button_4 = textz
+            
+            l = [self.tw,z]
+            update_score(l)
+            Clock.schedule_once(empt, 5)    
+            
+
+    
+class SampsentScreen(Screen):
+    question = StringProperty('')
+    button_1 = StringProperty('')
+    button_2 = StringProperty('')
+    button_3 = StringProperty('')
+    button_4 = StringProperty('')
+    correct = StringProperty('')
+    rein = StringProperty('')
+    yes = NumericProperty()
+    tri = NumericProperty()
+    
+    def __init__(self, *args, **kwargs):
+        super(SampsentScreen, self).__init__(*args, **kwargs)
+        t = Samp__Sent_Game(1,ha)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        self.rein = ' '
+        self.yes = 0
+        self.tri = 0
+    
+    def reset(self):
+        
+        t = Samp__Sent_Game(1,ha)
+        self.question = t[0]
+        self.button_1 =t[2][0]
+        self.button_2 =t[2][1]
+        self.button_3 =t[2][2]
+        self.button_4 =t[2][3]
+        self.correct =t[1]
+        return t
+    
+    def check(self,text):
+        def empt(dt):
+            self.reset()
+        z = 0
+        if text == self.correct:
+            self.yes+=1
+            self.tri+=1
+            z+=1
+            if self.tri >=1:
+                self.rein = str(str(self.yes)+'/'+str(self.tri))
+            l = [text,z]
+            update_score(l)
+            self.reset()
+        elif text != self.correct:
+            self.tri+=1
+            self.rein = str(str(self.yes)+'/'+str(self.tri))
+            c = self.correct
+            textz = c.upper()
+            self.button_1 = textz
+            self.button_2 = textz
+            self.button_3 = textz
+            self.button_4 = textz
+            
+            l = [text,z]
+            update_score(l)
+            Clock.schedule_once(empt, 5)    
+            
+
+#total seen
+class LexScreen(Screen):
+    view = ObjectProperty(None)
+    lexadex = StringProperty('')
+    
+    def __init__(self, *args, **kwargs):
+        super(LexScreen, self).__init__(*args, **kwargs)
+        Clock.schedule_once(self.create_scrollview)
+        self.lexadex = "Words thus far: " + str(len(Lexadex))
+        
+
+    def create_scrollview(self, dt):
+        
+        base = []
+        
+        for index, rows in Lexadex.iterrows(): 
+        # Create list for the current row 
+            base.append(index+'  '+ str(rows.correct)+'/'+ str(rows.tries))
+        layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
+        layout.bind(minimum_height=layout.setter("height"))
+
+        for element in base:
+            layout.add_widget(Button(text=element, size=(50, 50), size_hint=(1, None),
+                                     background_color=(0.5, 0.5, 0.5, 1), color=(1, 1, 1, 1)))
+        scrollview = ScrollView(size_hint=(1, None), size=(Window.width, Window.height))
+        scrollview.add_widget(layout)
+        self.view.add_widget(scrollview)
+
+# Create both screens. Please note the root.manager.current: this is how
+# you can control the ScreenManager from kv. Each screen has by default a
+# property manager that gives you the instance of the ScreenManager used.
+
+
+Builder.load_string("""
+<BackgroundColor@Widget>:
+    background_color: 1, 1, 1, 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+# Now you can simply Mix the `BackgroundColor` class with almost
+# any other widget... to give it a background.
+<BackgroundLabel@Label+BackgroundColor>:
+    background_color: 0, 0, 0, 0
+    # Default the background color for this label
+    # to r 0, g 0, b 0, a 0
+
+<MenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text: 'Definition Game'
+            bold: 1
+            on_press: root.manager.transition.direction = 'left'
+            on_press: root.manager.current = 'defs'
+        Button:
+            text: 'Synonyms Game'
+            bold: 1
+            id :'syngame'
+            on_press: root.manager.transition.direction = 'left'
+            on_press: root.manager.current = 'syn'
+        Button:
+            text: 'Antonyms Game'
+            bold: 1
+            on_press: root.manager.transition.direction = 'left'
+            on_press: root.manager.current = 'ants'
+        Button:
+            text: 'Sample Sentence Game'
+            bold: 1
+            on_press: root.manager.transition.direction = 'left'
+            on_press: root.manager.current = 'sampsent'
+        Button:
+            text: 'Lexidex'
+            bold: 1
+            on_press: root.manager.transition.direction = 'left'
+            on_press: root.manager.current = 'lex'
+        Button:
+            text: 'Quit'
+            bold: 1
+            id:'quitz'
+
+<DefsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        BackgroundLabel:
+            text: 'Maybe a banner'
+            bold: 1
+            size_hint: (1,.25)
+            background_color: 10, 0, 50, .33
+        Label:
+            text: root.question
+            text_size: self.width, None
+            color: 1, 1, 1, 1
+            halign: 'center'
+            bold: 1
+            id: 'question'
+            size_hint: (1,2)
+                
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                id: 'button_1'
+                text: root.button_1
+                font_size: 30
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_2'
+                text: root.button_2
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            BackgroundLabel:
+                id: 'rein'
+                text: root.rein
+                background_color: 80, 80, 80, .2  
+                font_size: 30
+                bold: 1
+        
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                id: 'button_3'
+                text: root.button_3
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_4'
+                text: root.button_4
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                text: ' back to menu'
+                text_size: self.width, None
+                bold: 1
+                color: 1,0,0,1
+                background_color: .52, .52, .52, 1
+                on_press: root.manager.transition.direction = 'right'
+                on_press: root.manager.current = 'menu'
+                on_press: root.reset()
+<SynScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        BackgroundLabel:
+            text: 'Maybe a banner'
+            bold: 1
+            size_hint: (1,.15)
+            background_color: 10, 0, 50, .33
+        Label:
+            text: root.question
+            text_size: self.width, None
+            color: 1, 1, 1, 1
+            halign: 'center'
+            bold: 1
+            id: 'question'
+            size_hint: (1,1)
+                
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                id: 'button_1'
+                text: root.button_1
+                font_size: 30
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_2'
+                text: root.button_2
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_3'
+                text: root.button_3
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_4'
+                text: root.button_4
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            BoxLayout:
+                orientation: 'horizontal'
+                Button:
+                    text: ' back to menu'
+                    text_size: self.width, None
+                    halign: 'center'
+                    bold: 1
+                    color: 1,0,0,1
+                    background_color: .52, .52, .52, 1
+                    on_press: root.manager.transition.direction = 'right'
+                    on_press: root.manager.current = 'menu'
+                    on_press: root.reset()
+                BackgroundLabel:
+                    id: 'rein'
+                    text: root.rein
+                    background_color: 80, 80, 80, .2  
+                    font_size: 30
+                    bold: 1
+
+<AntScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        BackgroundLabel:
+            text: 'Maybe a banner'
+            bold: 1
+            size_hint: (1,.15)
+            background_color: 10, 0, 50, .33
+        Label:
+            text: root.question
+            text_size: self.width, None
+            color: 1, 1, 1, 1
+            halign: 'center'
+            bold: 1
+            id: 'question'
+            size_hint: (1,1)
+                
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                id: 'button_1'
+                text: root.button_1
+                font_size: 30
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_2'
+                text: root.button_2
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_3'
+                text: root.button_3
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_4'
+                text: root.button_4
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            BoxLayout:
+                orientation: 'horizontal'
+                Button:
+                    text: ' back to menu'
+                    text_size: self.width, None
+                    halign: 'center'
+                    bold: 1
+                    color: 1,0,0,1
+                    background_color: .52, .52, .52, 1
+                    on_press: root.manager.transition.direction = 'right'
+                    on_press: root.manager.current = 'menu'
+                    on_press: root.reset()
+                BackgroundLabel:
+                    id: 'rein'
+                    text: root.rein
+                    background_color: 80, 80, 80, .2  
+                    font_size: 30
+                    bold: 1
+<SampsentScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        BackgroundLabel:
+            text: 'Maybe a banner'
+            bold: 1
+            size_hint: (1,.15)
+            background_color: 10, 0, 50, .33
+        Label:
+            text: root.question
+            text_size: self.width, None
+            color: 1, 1, 1, 1
+            halign: 'center'
+            bold: 1
+            id: 'question'
+            size_hint: (1,1)
+                
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                id: 'button_1'
+                text: root.button_1
+                font_size: 30
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_2'
+                text: root.button_2
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_3'
+                text: root.button_3
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            Button:
+                id: 'button_4'
+                text: root.button_4
+                bold: 1
+                background_color: .52, .52, .52, 1
+                on_press: root.check(self.text)
+            BoxLayout:
+                orientation: 'horizontal'
+                Button:
+                    text: ' back to menu'
+                    text_size: self.width, None
+                    halign: 'center'
+                    bold: 1
+                    color: 1,0,0,1
+                    background_color: .52, .52, .52, 1
+                    on_press: root.manager.transition.direction = 'right'
+                    on_press: root.manager.current = 'menu'
+                    on_press: root.reset()
+                BackgroundLabel:
+                    id: 'rein'
+                    text: root.rein
+                    background_color: 80, 80, 80, .2  
+                    font_size: 30
+                    bold: 1
+
+<LexScreen>:
+    view: view
+    
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: 'lexadex'
+            text: root.lexadex
+            size_hint: (1,.25)
+        ScrollView:
+            id: view
+        Button:
+            on_press: root.manager.transition.direction = 'right'
+            text: 'Back to menu'
+            on_press: root.manager.current = 'menu'
+            size_hint: (1,.25)
+
+
+
+""")
+
+ 
+
+    
+
+# Create the screen manager
+sm = ScreenManager()
+sm.add_widget(MenuScreen(name='menu'))
+sm.add_widget(DefsScreen(name='defs'))
+sm.add_widget(SynScreen(name='syn'))
+sm.add_widget(AntScreen(name='ants'))
+sm.add_widget(SampsentScreen(name='sampsent'))
+sm.add_widget(LexScreen(name='lex'))
+
+
+#MenuScreen = ObjectProperty()
+class TestApp(App):
+ 
+
+    def build(self):
+        return sm
+ 
+if __name__ == '__main__':
+    TestApp().run()
