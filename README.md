@@ -8,6 +8,8 @@
   
   vocabulary.csv - two columns of GRE words and definition. Defs are not used, made by NLTK
   
+  usa.xlsx - List of target GRE word and sentences containing that word found in books
+  
   syn_gen.py -  contains code for inputting random GRE word and outputting a question, the answer and decoy answers. This is     
   sent to kivy to generate GUI.
      
