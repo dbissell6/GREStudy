@@ -15,8 +15,10 @@
      
   Kivy_SM - python file containing all of the Kivy code
 
-
   The game will record score in a file called vocadex.xlsx. 
+
+
+
 
 Bugs:
   Quit button does not work.
