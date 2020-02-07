@@ -8,8 +8,8 @@
   
   vocabulary.csv - two columns of GRE words and definition. Defs are not used, made by NLTK
   
-  Main -  contains code for inputting random GRE word and outputting a question, the answer and decoy answers. This is sent
-  to kivy to generate GUI.
+  syn_gen.py -  contains code for inputting random GRE word and outputting a question, the answer and decoy answers. This is     
+  sent to kivy to generate GUI.
      
   Kivy_SM - python file containing all of the Kivy code
 
