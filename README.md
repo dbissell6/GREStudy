@@ -10,8 +10,8 @@
   
   usa.xlsx - List of target GRE word and sentences containing that word found in books
   
-  syn_gen.py -  contains code for inputting random GRE word and outputting a question, the answer and decoy answers. This is     
-  sent to kivy to generate GUI.
+  syn_gen.py -  contains code for inputting random GRE word and outputting a question, the answer and decoy answers. Sent to     
+  kivy to generate GUI.
      
   Kivy_SM - python file containing all of the Kivy code
 
