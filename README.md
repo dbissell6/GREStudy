@@ -5,12 +5,14 @@
   Finally ~20 books were downloaded from gutenberg.org. Sentences were processed for the GRE words.
   Using these sentences, questions of fill in the blank were created. 
 
-  Books contains txt files of books
+  Books - contains txt files of books
   
-  Main contains code for inputting random GRE word and outputting a question, the answer and decoy answers. This is sent
+  vocabulary - two columns of GRE words and definition. Defs are not used, made by NLTK
+  
+  Main -  contains code for inputting random GRE word and outputting a question, the answer and decoy answers. This is sent
   to kivy to generate GUI.
      
-  Kivy_SM is the file containing all of the Kivy code
+  Kivy_SM - python file containing all of the Kivy code
 
 
 
