@@ -3,7 +3,7 @@
 """
 Created on Sun Sep 15 21:27:06 2019
 
-@author: danielbissell
+@author: dab
 """
 
 import pandas as pd
@@ -25,7 +25,7 @@ from nltk.corpus import wordnet
 ## Definitions, Synonyms, antonyms, Sample Sentences, 
 
 # import from excel to dataframe
-GRE = pd.read_csv("/Users/danielbissell/Desktop/vocabulary.csv")
+GRE = pd.read_csv("/Users/Path/vocabulary.csv")
 
 ###############################################################################
 
@@ -313,13 +313,13 @@ def Ant_Game(n):
 #     
 # =============================================================================
 ### Load previous game state Data frame
-indy_1 = pd.read_excel("/Users/danielbissell/Desktop/Python stuff/vocadex.xlsx")
+indy_1 = pd.read_excel("/Users/Path/vocadex.xlsx")
 ### Set index to word
 indy_1.set_index("words",inplace=True)
 
 
 ### Load example sentences as dataframe
-ha = pd.read_excel("/Users/danielbissell/Desktop/Python stuff/usa.xlsx")
+ha = pd.read_excel("/Users/Path/usa.xlsx")
 
 # drop first column, rename others
 ha.drop(['Unnamed: 0'], axis=1,inplace=True)
