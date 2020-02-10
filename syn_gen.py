@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Sun Sep 15 21:27:06 2019
 
@@ -8,7 +6,8 @@ Created on Sun Sep 15 21:27:06 2019
 
 import pandas as pd
 import random
-from nltk.corpus import wordnet 
+from nltk.corpus import wordnet
+from pathlib import Path
 
 
 ###
@@ -25,7 +24,10 @@ from nltk.corpus import wordnet
 ## Definitions, Synonyms, antonyms, Sample Sentences, 
 
 # import from excel to dataframe
-GRE = pd.read_csv("/Users/Path/vocabulary.csv")
+
+script_location = Path(__file__).parent
+csv_path = script_location / 'vocabulary.csv'
+gre = pd.read_csv("/Users/Path/vocabulary.csv")
 
 ###############################################################################
 
@@ -72,26 +74,25 @@ def update_score(l):
     
 
 
-#########################
+
 ###Games
 ##########
 ##############################################################################
 ### Samp_Sent_Game
 
-### an example sentence will appear with target word replaced as ???
-### option will consist of correct word and 3 decoys.
-   # n is number of times, usa is a corpus 
+### 
 ##############################################################################
 
 
-def Samp__Sent_Game(n,usa):
-
+def samp__sent_game(n,usa):
     
-    ### usa is a list of tuples containing example sentence and correct responses
+   """ an example sentence will appear with target word replaced as ???
+       option will consist of correct word and 3 decoys.
+       # n is number of times, usa is a corpus 
+       usa -- list of tuples containing example sentence and correct responses
+   """
+    
     usa = ha
-
-    ### n is the number on times the game is played
-    
     
     for i in range(n):
         
@@ -141,14 +142,14 @@ def Samp__Sent_Game(n,usa):
 
 
 ##############################################################################
-### Def_Game
+### def_Game
 
 ### a definition appears with 3 decoys
 
 ##############################################################################
 
 
-def Def_Game(n):
+def def_Game(n):
 
     ### n is the number on times the game is played
     for i in range(n):
@@ -197,7 +198,7 @@ def Def_Game(n):
 
 
 ##############################################################################
-### Syn_Game
+### syn_Game
 
 ### a program that chooses target word 4 options one being a SYNONYMN other 
 ### 3 are randos making sure not a synymn
@@ -205,7 +206,7 @@ def Def_Game(n):
 ### should change this to make it easier
 ##############################################################################
 
-def Syn_Game(n):
+def syn_Game(n):
 
     ### n is the number on times the game is played
     for i in range(n):
@@ -257,7 +258,7 @@ def Syn_Game(n):
 ### 3 are randos making sure not a synymn
 ##############################################################################
 
-def Ant_Game(n):
+def ant_Game(n):
     
     for i in range(n):
     
