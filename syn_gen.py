@@ -10,13 +10,6 @@ from nltk.corpus import wordnet
 from pathlib import Path
 
 
-###
-### Things that could be done
-### 1)crossword puzzle, 
-### 2)if someone is about to read a new book, pull words from that book that might 
-### be out of range for the person
-### 3) create analogy game with GloVe
-
 # =============================================================================
 # Set of functions to make vocab games. 
 # =============================================================================
@@ -27,17 +20,10 @@ from pathlib import Path
 
 script_location = Path(__file__).parent
 csv_path = script_location / 'vocabulary.csv'
-gre = pd.read_csv("/Users/Path/vocabulary.csv")
+gre = pd.read_csv(csv_path)
 
 ###############################################################################
 
-####################################################################
-##### To do
-####################################################################
-#### Create new games
-
-### In Syn_Game and Ant_Game all answers and decoy words are GRE words 
-### should change this to make it easier
 
 ##### The game function should return 0) The question, 1) the answer, 2) 3 decoys,
 #####  3)  
@@ -49,15 +35,13 @@ gre = pd.read_csv("/Users/Path/vocabulary.csv")
 #### lexadex
 ##############################################################################
 
-indy_1 = pd.DataFrame()
+indy = pd.DataFrame()
+indy['words'] = GRE['words']
+indy['correct'] = 0
+indy['tries'] = 0
 
-indy_1['words'] = GRE['words']
-
-indy_1['correct'] = 0
-indy_1['tries'] = 0
-
-### Set index to word
-indy_1.set_index("words",inplace=True)
+"""Set index to word"""
+indy.set_index("words",inplace=True)
 
 
 ###############################################################################
@@ -67,79 +51,81 @@ indy_1.set_index("words",inplace=True)
 def update_score(l):
     
     thing = l
-    indy_1.loc[thing[0]].at['correct']+=thing[1]
-    indy_1.loc[thing[0]].at['tries']+= 1
+    indy.loc[thing[0]].at['correct']+=thing[1]
+    indy.loc[thing[0]].at['tries']+= 1
     ### Save
-    indy_1.to_excel("vocadex.xlsx")
+    indy.to_excel("vocadex.xlsx")
     
 
+# Create 3 decoys
+    
+def decoys(synonyms):
+    d1, d2, d3 = False, False, False
+    
+    while d1== False and d2 == False and d3 == False:
+    
+        d1o = GRE.words[random.randint(0,len(GRE))]
+        if d1o not in synonyms:
+            d1 = d1o
+                
+        d2o = GRE.words[random.randint(0,len(GRE))]
+        if d2o not in synonyms:
+            d2 = d2o
+            
+        d3o = GRE.words[random.randint(0,len(GRE))]
+        if d3o not in synonyms:
+            d3 = d3o
+    
+    return d1,d2,d3
 
+###      Games
 
-###Games
-##########
 ##############################################################################
 ### Samp_Sent_Game
-
-### 
 ##############################################################################
 
+   ''' 
+   an example sentence will appear with target word replaced as ???
+   option will consist of correct word and 3 decoys.
+   #  usa is a corpus 
+   usa -- list of tuples containing example sentence and correct responses
+   sent --
+   tup --
+   word --
+   
+   '''
 
-def samp__sent_game(n,usa):
+
+def samp__sent_game():
     
-   """ an example sentence will appear with target word replaced as ???
-       option will consist of correct word and 3 decoys.
-       # n is number of times, usa is a corpus 
-       usa -- list of tuples containing example sentence and correct responses
-   """
+    usa = ha   
+    tup = usa.sample() 
+    sent = tup.iat[0,0]
+    sent = sent.replace('\n', ' ')
+    word = tup.iat[0,1]
+    word = word.strip(' ')
     
-    usa = ha
+    ### Replace target with question marks
+    sent = sent.replace(word, '???')
     
-    for i in range(n):
-        
-        tup = usa.sample() 
-        sent = tup.iat[0,0]
-        sent = sent.replace('\n', ' ')
-        word = tup.iat[0,1]
-        word = word.strip(' ')
-        
-        ### Replace target with question marks
-        sent = sent.replace(word, '???')
-
-
-        synonyms = []
-        for syn in wordnet.synsets(word): 
-            for l in syn.lemmas(): 
-                if l.name() in GRE.words.values and word != l.name():
-                    synonyms.append(l.name()) 
-
-        
-        synonyms = list(set(synonyms)) 
-        
-        
-        z, zz, d3 = False, False, False
-        
-        while z== False and zz == False and d3 == False:
-        
-            zo = GRE.words[random.randint(0,len(GRE))]
-            if zo not in synonyms:
-                z = zo
-                    
-            zzo = GRE.words[random.randint(0,len(GRE))]
-            if zzo not in synonyms:
-                zz = zzo
-                
-            d3o = GRE.words[random.randint(0,len(GRE))]
-            if d3o not in synonyms:
-                d3 = d3o
-                      
-                
-        final = [word,z,zz,d3]
-        
-        random.shuffle(final)
-        
-        
-        return sent, word, final
-
+    
+    synonyms = []
+    for syn in wordnet.synsets(word): 
+        for l in syn.lemmas(): 
+            if l.name() in GRE.words.values and word != l.name():
+                synonyms.append(l.name()) 
+    
+    
+    synonyms = list(set(synonyms)) 
+    
+    d1, d2, d3 = decoys(synonyms)
+    
+    final = [word,d1,d2,d3]
+    
+    random.shuffle(final)
+    
+    return sent, word, final
+    
 
 ##############################################################################
 ### def_Game
@@ -149,49 +135,28 @@ def samp__sent_game(n,usa):
 ##############################################################################
 
 
-def def_Game(n):
+def def_Game():
+  
+    synonyms = []
+    
+    word = GRE.words[random.randint(0,len(GRE)-1)]
+    define=wordnet.synsets(word)
+    
+    for syn in wordnet.synsets(word): 
+        for l in syn.lemmas(): 
+            if l.name() in GRE.words.values and word != l.name():
+                synonyms.append(l.name()) 
 
-    ### n is the number on times the game is played
-    for i in range(n):
-        
-        synonyms = []
-        
-        word = GRE.words[random.randint(0,len(GRE)-1)]
-        define=wordnet.synsets(word)
-        #word_def = (define[0].definition())
-        
-
-
-        for syn in wordnet.synsets(word): 
-            for l in syn.lemmas(): 
-                if l.name() in GRE.words.values and word != l.name():
-                    synonyms.append(l.name()) 
-
-        synonyms = list(set(synonyms)) 
-        
-        
-        z, zz, d3 = False, False, False
-        
-        while z== False and zz == False and d3 == False:
-        
-            zo = GRE.words[random.randint(0,len(GRE)-1)]
-            if zo not in synonyms:
-                z = zo
-                    
-            zzo = GRE.words[random.randint(0,len(GRE)-1)]
-            if zzo not in synonyms:
-                zz = zzo
-                
-            d3o = GRE.words[random.randint(0,len(GRE)-1)]
-            if d3o not in synonyms:
-                d3 = d3o
-                      
-                
-        final = [word,z,zz,d3]
-        
-        random.shuffle(final)
-        
-        q = 'Which word means "{0}"'.format(define[0].definition())
+    synonyms = list(set(synonyms)) 
+    
+    
+    d1, d2, d3 = decoys(synonyms)
+    
+    final = [word,d1, d2, d3]
+    
+    random.shuffle(final)
+    
+    q = 'Which word means "{0}"'.format(define[0].definition())
 
     return q, word, final
     
@@ -206,49 +171,33 @@ def def_Game(n):
 ### should change this to make it easier
 ##############################################################################
 
-def syn_Game(n):
+def syn_Game():
 
-    ### n is the number on times the game is played
-    for i in range(n):
-        synonyms = [] 
+  
+    synonyms = [] 
+
+    while len(synonyms) == 0:  
+        x = GRE.words[random.randint(0,len(GRE)-1)]
+        for syn in wordnet.synsets(x): 
+            for l in syn.lemmas(): 
+                if l.name() in GRE.words.values and x != l.name():
+                    synonyms.append(l.name()) 
+
+        synonyms = list(set(synonyms)) 
     
-        while len(synonyms) == 0:  
-            x = GRE.words[random.randint(0,len(GRE)-1)]
-            for syn in wordnet.synsets(x): 
-                for l in syn.lemmas(): 
-                    if l.name() in GRE.words.values and x != l.name():
-                        synonyms.append(l.name()) 
+    if len(synonyms)>2:
+        y = synonyms[random.randint(0,len(synonyms)-1)]
+    else:
+        y = synonyms[0]
     
-            synonyms = list(set(synonyms)) 
+
+    d1, d2, d3 = decoys(synonyms)        
         
-        if len(synonyms)>2:
-            y = synonyms[random.randint(0,len(synonyms)-1)]
-        else:
-            y = synonyms[0]
-        
-        z, zz = False, False
-        
-        while z== False and zz == False:
-        
-            zo = GRE.words[random.randint(0,len(GRE)-1)]
-            if zo not in synonyms:
-                z = zo
-                    
-            zzo = GRE.words[random.randint(0,len(GRE)-1)]
-            if zzo not in synonyms:
-                zz = zzo
-                
-            d3o = GRE.words[random.randint(0,len(GRE)-1)]
-            if d3o not in synonyms:
-                d3 = d3o
-                      
-                
-        final = [y,z,zz,d3]
-        
-        random.shuffle(final)
-        
-        
-        q = ('What is the synonym of {0}? '.format(x))
+    final = [y,d1, d2, d3]
+    
+    random.shuffle(final)
+    
+    q = ('What is the synonym of {0}? '.format(x))
 
 
     return q, y, final
@@ -258,69 +207,49 @@ def syn_Game(n):
 ### 3 are randos making sure not a synymn
 ##############################################################################
 
-def ant_Game(n):
-    
-    for i in range(n):
-    
-        antonyms = [] 
+def ant_Game():
+    antonyms = [] 
 
-        while len(antonyms) == 0:  
-            x = GRE.words[random.randint(0,len(GRE)-1)]
-            for syn in wordnet.synsets(x): 
-                for l in syn.lemmas(): 
-                    if l.antonyms(): 
-                        antonyms.append(l.antonyms()[0].name()) 
-                        antonyms_r = [word for word in antonyms if word not in x and x not in word]
-                        if len(antonyms_r) <1:
-                            antonyms = []
-                            antonyms_r = []
-            
-             
-            antonyms_r = list(set(antonyms)) 
-        
-        if len(antonyms_r)>2:
-            y = antonyms_r[random.randint(0,len(antonyms_r)-1)]
-        else:
-            y = antonyms_r[0]
-        
-        ### Selects decoys
-        z, zz = False, False
-        
-        while z== False and zz == False:
-        
-            zo = GRE.words[random.randint(0,len(GRE)-1)]
-            if zo not in antonyms_r:
-                z = zo
-                    
-            zzo = GRE.words[random.randint(0,len(GRE)-1)]
-            if zzo not in antonyms_r:
-                zz = zzo
-                
-            d3o = GRE.words[random.randint(0,len(GRE)-1)]
-            if d3o not in antonyms_r:
-                d3 = d3o
-                      
-                
-        final = [y,z,zz,d3]
-        
-        random.shuffle(final)
-        q = ('What is the antonym of {0}? '.format(x))
-        
-        return  q, y, final, x
-
+    while len(antonyms) == 0:  
+        x = GRE.words[random.randint(0,len(GRE)-1)]
+        for syn in wordnet.synsets(x): 
+            for l in syn.lemmas(): 
+                if l.antonyms(): 
+                    antonyms.append(l.antonyms()[0].name()) 
+                    antonyms_r = [word for word in antonyms if word not in x and x not in word]
+                    if len(antonyms_r) <1:
+                        antonyms = []
+                        antonyms_r = []
+      
+    antonyms_r = list(set(antonyms)) 
     
+    if len(antonyms_r)>2:
+        y = antonyms_r[random.randint(0,len(antonyms_r)-1)]
+    else:
+        y = antonyms_r[0]
     
+   
+    d1, d2, d3 = decoys(antonyms)
+                        
+    final = [y, d1, d2, d3]
+    
+    random.shuffle(final)
+    q = ('What is the antonym of {0}? '.format(x))
+    
+    return  q, y, final, x
 # =============================================================================
 #     
 # =============================================================================
 ### Load previous game state Data frame
-indy_1 = pd.read_excel("/Users/Path/vocadex.xlsx")
+indy = pd.read_excel("/Users/Path/vocadex.xlsx")
 ### Set index to word
-indy_1.set_index("words",inplace=True)
+indy.set_index("words",inplace=True)
 
 
 ### Load example sentences as dataframe
-ha = pd.read_excel("/Users/Path/usa.xlsx")
+
+csv_path = script_location / 'usa.xlsx'
+ha = pd.read_csv(csv_path)
 
 # drop first column, rename others
 ha.drop(['Unnamed: 0'], axis=1,inplace=True)
@@ -328,10 +257,4 @@ ha.rename(columns={0: "sent", 1: "word"},inplace=True)
 
 #########
 # display known lexadex words
-Lexadex = indy_1.loc[indy_1['tries'] >= 1]
-
-
-
-
-
-
+Lexadex = indy.loc[indy['tries'] >= 1]
