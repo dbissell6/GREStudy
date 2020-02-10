@@ -24,3 +24,10 @@ Bugs:
   Quit button does not work.
   
   Game will crash if user clicks the correct answer reveal after an wrong guess.
+  
+  
+
+ Things that could be done
+   1)crossword puzzle, 
+   2)if someone is about to read a new book, pull words from that book that might  be out of range for the person
+   3) create analogy game with GloVe
