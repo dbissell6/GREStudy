@@ -28,6 +28,14 @@ Bugs:
   
 
  Things that could be done
-   1)crossword puzzle, 
-   2)if someone is about to read a new book, pull words from that book that might  be out of range for the person
-   3) create analogy game with GloVe
+   1) crossword puzzle, analogy game with GloVe
+   2) if someone is about to read a new book, or SAT vocab can be changed
+   3) Use graph to group words into clusters  
+   4) definition displays when word is clicked in lexidex
+   
+   To make an app.
+    Login screen
+
+
+
+
